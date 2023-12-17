@@ -1,42 +1,53 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import SearchDropDown from "./components/SearchDropDown";
+import Haircut from "./types/haircut";
 
 function App() {
-  const haircuts = [
-    "Test1",
-    "Test2",
-    "Test3",
-    "Abc",
-    "Ac",
-    "Xyz",
-    "est1",
-    "est2",
-    "est3",
-    "bc",
-    "c",
-    "yz",
-  ];
   const [isSearchbarSelected, setIsSearchbarSelected] = useState(false);
+  const [haircuts, setHaircuts] = useState<Haircut[]>([]);
   const [matches, setMatches] = useState<string[]>([]);
-  const [selection, setSelection] = useState("");
+  const [lowerCaseMap, setLowerCaseMap] = useState<Record<string, string>>({});
+  const [selection, setSelection] = useState<string>("");
 
+  // Fetch haircuts from DB
+  const fetchHaircuts = async () => {
+    console.log("Fetching haircuts");
+    try {
+      const response = await fetch("http://localhost:5000/haircuts");
+      console.log(response);
+
+      const json = await response.json();
+      return json;
+    } catch (error) {
+      console.log(error);
+      // Tell user that the fetch failed
+      alert("Failed to load haircuts");
+      return [];
+    }
+  };
+
+  // Set up state from fetched haircuts
   useEffect(() => {
-    // Fetch haircuts from DB
-    setMatches(haircuts);
-  }, []);
+    const fetchData = async () => {
+      const data = await fetchHaircuts();
 
-  // Store lowercase haircuts in dictionary for case insensitive search
-  const lowerCaseMap = useMemo(() => {
-    if (!haircuts || haircuts.length === 0) {
-      return {};
-    }
-    let map: Record<string, string> = {};
-    for (let haircut of haircuts) {
-      map[haircut.toLowerCase()] = haircut;
-    }
-    return map;
-  }, [haircuts]);
-  //console.log("lower case map", lowerCaseMap);
+      let haircutNames: string[] = [];
+      let lowerCaseNamesMap: Record<string, string> = {};
+      let keys = Object.keys(data);
+      for (let haircutName of keys) {
+        // Get all haircut names to initialize matches as all haircuts
+        // ^ This is to show user all options on empty input (no filter applied)
+        haircutNames.push(haircutName);
+
+        // Store lowercase haircuts in dictionary for case insensitive search
+        lowerCaseNamesMap[haircutName.toLowerCase()] = haircutName;
+      }
+      setHaircuts(data);
+      setMatches(haircutNames);
+      setLowerCaseMap(lowerCaseNamesMap);
+    };
+    fetchData();
+  }, []);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const input = event.target.value;
@@ -60,14 +71,12 @@ function App() {
     setMatches([haircut]);
   };
 
-  console.log("SELECITON", selection);
-
   return (
     <div className="h-full bg-gradient-to-br from-amber-200 to-orange-400 flex justify-center text-slate-600">
       <div className="w-1/2 mt-12 flex justify-center">
         <div
           className={`relative max-w-md h-fit w-11/12 rounded-b-xl rounded-t-2xl ${
-            matches && "bg-white "
+            matches.length > 0 && "bg-white"
           }`}
         >
           <label

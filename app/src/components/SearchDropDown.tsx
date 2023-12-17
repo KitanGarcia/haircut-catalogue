@@ -1,3 +1,5 @@
+import Haircut from "../types/haircut";
+
 interface SearchDropDownProps {
   matches: string[];
   handleSearchClick: (haircut: string) => void;
