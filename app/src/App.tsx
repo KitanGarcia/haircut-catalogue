@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import HaircutCard from "./components/HaircutCard";
 import SearchDropDown from "./components/SearchDropDown";
 import Haircut from "./types/haircut";
 
 function App() {
   const [isSearchbarSelected, setIsSearchbarSelected] = useState(false);
-  const [haircuts, setHaircuts] = useState<Haircut[]>([]);
+  const [haircuts, setHaircuts] = useState<Record<string, Haircut>>({});
   const [matches, setMatches] = useState<string[]>([]);
   const [lowerCaseMap, setLowerCaseMap] = useState<Record<string, string>>({});
   const [selection, setSelection] = useState<string>("");
@@ -22,7 +23,7 @@ function App() {
       console.log(error);
       // Tell user that the fetch failed
       alert("Failed to load haircuts");
-      return [];
+      return {};
     }
   };
 
@@ -30,6 +31,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchHaircuts();
+      console.log(data);
 
       let haircutNames: string[] = [];
       let lowerCaseNamesMap: Record<string, string> = {};
@@ -72,8 +74,8 @@ function App() {
   };
 
   return (
-    <div className="h-full bg-gradient-to-br from-amber-200 to-orange-400 flex justify-center text-slate-600">
-      <div className="w-1/2 mt-12 flex justify-center">
+    <div className="h-full overflow-auto bg-gradient-to-br from-amber-200 to-orange-400 text-slate-600">
+      <div className="w-full pt-16 flex justify-center">
         <div
           className={`relative max-w-md h-fit w-11/12 rounded-b-xl rounded-t-2xl ${
             matches.length > 0 && "bg-white"
@@ -110,6 +112,16 @@ function App() {
           )}
         </div>
       </div>
+      {matches && (
+        <div className="place-content-center flex flex-wrap p-5 gap-12">
+          {matches.map((haircutName) => (
+            <HaircutCard
+              haircut={haircuts[haircutName]}
+              haircutName={haircutName}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
