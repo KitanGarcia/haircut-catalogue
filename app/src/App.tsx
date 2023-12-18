@@ -9,18 +9,19 @@ function App() {
   const [matches, setMatches] = useState<string[]>([]);
   const [lowerCaseMap, setLowerCaseMap] = useState<Record<string, string>>({});
   const [selection, setSelection] = useState<string>("");
+  const [sortAscending, setSortAscending] = useState(true);
+  const [sortAlphabetical, setSortAlphabetical] = useState(true);
 
   // Fetch haircuts from DB
   const fetchHaircuts = async () => {
-    console.log("Fetching haircuts");
     try {
       const response = await fetch("http://localhost:5000/haircuts");
-      console.log(response);
 
       const json = await response.json();
       return json;
     } catch (error) {
       console.log(error);
+
       // Tell user that the fetch failed
       alert("Failed to load haircuts");
       return {};
@@ -31,7 +32,6 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchHaircuts();
-      console.log(data);
 
       let haircutNames: string[] = [];
       let lowerCaseNamesMap: Record<string, string> = {};
@@ -73,6 +73,43 @@ function App() {
     setMatches([haircut]);
   };
 
+  const sortHaircuts = (method: string) => {
+    let sortableHaircuts: Haircut[] = [];
+    let sorted: Haircut[] = [];
+    if (method === "price") {
+      for (let haircut of matches) {
+        if (haircuts[haircut]) {
+          sortableHaircuts.push(haircuts[haircut]);
+        }
+      }
+
+      if (sortAscending) {
+        sorted = sortableHaircuts.sort((a: Haircut, b: Haircut) => {
+          return a.price - b.price;
+        });
+      } else {
+        sorted = sortableHaircuts.sort((a: Haircut, b: Haircut) => {
+          return b.price - a.price;
+        });
+      }
+      let sortedNames = sorted.map((haircut) => haircut.name);
+      setMatches(sortedNames as string[]);
+      setSortAscending(!sortAscending);
+    }
+
+    // Alphabetical sort
+    else {
+      let sortedMatches = matches;
+      if (sortAlphabetical) {
+        sortedMatches = matches.sort();
+      } else {
+        sortedMatches = matches.sort().reverse();
+      }
+      setMatches(sortedMatches);
+      setSortAlphabetical(!sortAlphabetical);
+    }
+  };
+
   return (
     <div className="h-full overflow-auto bg-gradient-to-br from-amber-200 to-orange-400 text-slate-600">
       <div className="w-full pt-16 flex justify-center">
@@ -111,11 +148,27 @@ function App() {
             />
           )}
         </div>
+        <div className="h-12 w-64 flex justify-around items-center">
+          <button
+            className="h-7 px-3 leading-none bg-white rounded-xl border-2 border-slate-500 text-slate-500 hover:border-slate-800 hover:text-slate-800"
+            onClick={() => sortHaircuts("price")}
+          >
+            Sort Price
+          </button>
+
+          <button
+            className="h-7 px-3 leading-none bg-white rounded-xl border-2 border-slate-500 text-slate-500 hover:border-slate-800 hover:text-slate-800"
+            onClick={() => sortHaircuts("alphabetical")}
+          >
+            Sort Name
+          </button>
+        </div>
       </div>
       {matches && (
         <div className="place-content-center flex flex-wrap p-5 gap-12">
           {matches.map((haircutName) => (
             <HaircutCard
+              key={haircutName}
               haircut={haircuts[haircutName]}
               haircutName={haircutName}
             />
