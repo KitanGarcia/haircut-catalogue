@@ -19,7 +19,7 @@ function HaircutCard({ haircut, haircutName }: haircutCardProps) {
         haircut characterized by x, y, and z.
       </p>
       <div className="flex w-full px-4 justify-between items-center">
-        <p className="mt-1 text-center text-black text-2xl">{`$${haircut.price}`}</p>
+        <p className="text-center text-black text-2xl">{`$${haircut.price}`}</p>
         <button className="bg-gradient-to-br from-amber-200 to-orange-300 rounded-xl px-2 text-slate-700 hover:bg-gradient-to-br hover:from-amber-300 hover:to-orange-400">
           More Info
         </button>
