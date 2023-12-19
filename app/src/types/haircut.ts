@@ -1,12 +1,10 @@
 import { ObjectId } from "mongodb";
 
 interface Haircut {
-  name: {
-    _id?: ObjectId;
-    id: number;
-    price: number;
-    imageUrl: string;
-  };
+  _id: ObjectId;
+  price: number;
+  imageUrl: string;
+  name?: string;
 }
 
 export default Haircut;

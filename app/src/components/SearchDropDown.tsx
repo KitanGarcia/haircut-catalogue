@@ -1,5 +1,3 @@
-import Haircut from "../types/haircut";
-
 interface SearchDropDownProps {
   matches: string[];
   handleSearchClick: (haircut: string) => void;
@@ -7,7 +5,7 @@ interface SearchDropDownProps {
 
 function SearchDropDown({ matches, handleSearchClick }: SearchDropDownProps) {
   return (
-    <div className="bg-white max-h-32 overflow-y-scroll rounded-b-xl text-slate-400">
+    <div className="bg-white max-h-32 overflow-y-auto rounded-b-xl text-slate-400">
       <ul>
         {matches.map((match, index) => (
           <li

@@ -56,6 +56,9 @@ server.post("/haircuts/populate", async (req, res) => {
 
     let collection = await db.collection("haircuts");
     for (let haircut of haircuts) {
+      // Add description to DB
+      let description = `The ${haircut.name} is a haircut characterized by x, y, and z.`;
+      haircut["description"] = description;
       await collection.insertOne(haircut);
     }
     res.status(204);

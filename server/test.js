@@ -1,7 +1,7 @@
 const populateDB = async () => {
   console.log("Populating DB with all haircuts");
   try {
-    const response = await fetch("http://localhost:3000/haircuts/populate", {
+    const response = await fetch("http://localhost:5000/haircuts/populate", {
       method: "POST",
     });
     console.log("response", response);
@@ -15,7 +15,7 @@ const populateDB = async () => {
 const fetchHaircuts = async () => {
   console.log("Fetching haircuts");
   try {
-    const response = await fetch("http://localhost:3000/haircuts");
+    const response = await fetch("http://localhost:5000/haircuts");
     console.log(response);
 
     const json = await response.json();
